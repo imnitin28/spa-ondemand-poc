@@ -7,6 +7,12 @@ defaults: &defaults
   working_directory: ~/spa-ondemand-poc
 
 version: 2
+
+parameters:
+  bucket_uri:
+    type: string
+    default: "devs3bucket"
+
 jobs:
   checkout_code:
     <<: *defaults
@@ -19,12 +25,14 @@ jobs:
 
   deploy-main:
     <<: *defaults
+    environment:
+      BUCKET_URI: << pipeline.parameters.bucket_uri >>
     steps:
       - attach_workspace:
           at: .
       - run:
           name: bucket selection S3
-          command: echo $BUCKET | base64
+          command: echo $BUCKET_URI | base64
 
 
 workflows:

@@ -13,12 +13,6 @@ jobs:
       - image: cimg/base:2023.03
     steps:
       - checkout
-      - run: echo "this is the test job"
-  testSPA:
-    docker:
-      - image: cimg/base:2023.03
-    steps:
-      - checkout
       - run: echo $BUCKET
     
 # Orchestrate our job run sequence
@@ -27,4 +21,3 @@ workflows:
     jobs:
       - build
       - test
-      - testSPA

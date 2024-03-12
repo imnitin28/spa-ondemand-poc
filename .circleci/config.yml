@@ -137,12 +137,4 @@ workflows:
           filters:
             branches:
               only: dev
-      - deploy-preview:
-          requires:
-            - lint
-            - test
-          filters:
-            branches:
-              ignore: main
-
           

@@ -1,31 +1,148 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/configuration-reference
-version: 2.1
+defaults: &defaults
+  docker:
+    - image: circleci/node:16-browsers
+      environment:
+        TZ: "Europe/Paris"
+        JOBS: 1
+  working_directory: ~/
 
-# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
-# See: https://circleci.com/docs/orb-intro/
-orbs:
-  # See the Node orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
-  node: circleci/node@5.2
-  # The S3 orb will setup the aws-cli and quickly copy or sync anything to s3.
-  # Orbs reduce the amount of configuration required for common tasks.
-  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/aws-s3
-  # NOTE: Environment variables containing the necessary secrets can be setup in the CircleCI UI
-  # See here https://circleci.com/docs/set-environment-variable/#set-an-environment-variable-in-a-project
-  aws-s3: circleci/aws-s3@4.0
+version: 2
+jobs:
+  checkout_code:
+    <<: *defaults
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  install_dependencies:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Yarn Install
+          command: yarn install --non-interactive --pure-lockfile
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
-# Orchestrate jobs using workflows
-# See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Lint Handlebars
+          command: yarn lint:hbs
+      - run:
+          name: Lint JavaScript
+          command: yarn lint:js
+
+  test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Run Tests
+          command: yarn test:coverage
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "coverage"
+
+  coverage:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run: echo "$CIRCLE_PULL_REQUEST" > _temp_circle_pull_request
+      - restore_cache:
+          keys:
+            - coverage-comment-id-{{ checksum "_temp_circle_pull_request" }}
+      - run:
+          name: 'Generate coverage status'
+          command: echo "yarn pipeline coverage status"
+      - save_cache:
+          when: always
+          key: coverage-comment-id-{{ checksum "_temp_circle_pull_request" }}
+          paths:
+            - ~/github-coverage-comment-id
+      - store_artifacts:
+          path: ./coverage
+
+  deploy-master:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run: echo 'export PATH=~/node_modules/.bin:$PATH' >> $BASH_ENV
+      - run:
+          name: Crowdin Upload
+          command: echo "crowdin upload"
+      - run:
+          name: Crowdin Download
+          command: echo "crowdin download"
+      - run:
+          name: Deploy
+          command: echo "deploy dev"
+
+  deploy-dev:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run: echo 'export PATH=~/node_modules/.bin:$PATH' >> $BASH_ENV
+      - run:
+          name: Crowdin Upload
+          command: echo "crowdin upload"
+      - run:
+          name: Crowdin Download
+          command: echo "crowdin download"
+      - run:
+          name: Deploy
+          command: echo "deploy dev"
+
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  version: 2
+  build_and_test:
     jobs:
-      - node/test:
-          version: "15.1"
-          # after the node/test job completes, build the dist packages and save them to a workspace
-          post-steps:
-            - run: npm run build
-            - aws-s3/copy:
-                from: dist/
-                to: s3://sample-app-vue
-                arguments: --recursive
+      - checkout_code
+      - install_dependencies:
+          requires:
+            - checkout_code
+      - lint:
+          requires:
+            - install_dependencies
+      - test:
+          requires:
+            - install_dependencies
+      - coverage:
+          requires:
+            - test
+      - deploy-master:
+          requires:
+            - lint
+            - test
+          filters:
+            branches:
+              only: main
+      - deploy-dev:
+          requires:
+            - lint
+            - test
+          filters:
+            branches:
+              only: dev
+      - deploy-preview:
+          requires:
+            - lint
+            - test
+          filters:
+            branches:
+              ignore: main
+
+          

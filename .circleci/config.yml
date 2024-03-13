@@ -23,16 +23,30 @@ jobs:
           paths:
             - .
 
+  # deploy-main:
+  #   <<: *defaults
+  #   environment:
+  #     BUCKET_URI: "${bucket_uri}"
+  #   steps:
+  #     - attach_workspace:
+  #         at: .
+  #     - run:
+  #         name: bucket selection S3
+  #         command: echo $BUCKET_URI
   deploy-main:
     <<: *defaults
-    environment:
-      BUCKET_URI: "${bucket_uri}"
     steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: bucket selection S3
-          command: echo $BUCKET_URI
+    - attach_workspace:
+        at: .
+    - run:
+        name: Set BUCKET_URI environment variable
+        command: echo "BUCKET_URI=${pipeline.parameters.bucket_uri}" >> $BASH_ENV
+    - run:
+        name: Display BUCKET_URI
+        command: |
+          source $BASH_ENV
+          echo $BUCKET_URI
+
 
 workflows:
   version: 2

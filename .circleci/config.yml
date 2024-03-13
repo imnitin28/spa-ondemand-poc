@@ -25,19 +25,21 @@ jobs:
 
   deploy-main:
     <<: *defaults
+    parameters:
+      bucket_uri:
+        type: string
+        default: $BUCKET_URI
     # environment:
     #   BUCKET_URI: "${bucket_uri}"
     steps:
       - attach_workspace:
           at: .
-      - print:
-          message: << parameters.bucket_uri >>
       - run:
           name: bucket selection S3
           command: echo $BUCKET_URI | base64
       - run:
           name: Show Bucket URI
-          command: echo " BUCKET_URI -> << parameters.bucket_uri >>"
+          command: echo <<parameters.bucket_uri>>
 
 
 

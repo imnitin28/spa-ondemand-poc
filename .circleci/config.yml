@@ -26,7 +26,7 @@ jobs:
   deploy-main:
     <<: *defaults
     environment:
-      BUCKET_URI: pipeline.parameters.bucket_uri
+      BUCKET_URI: "${pipeline.parameters.bucket_uri}"
     steps:
       - attach_workspace:
           at: .

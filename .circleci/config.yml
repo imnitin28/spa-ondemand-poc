@@ -30,6 +30,8 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - print:
+          message: << parameters.bucket_uri >>
       - run:
           name: bucket selection S3
           command: echo $BUCKET_URI | base64

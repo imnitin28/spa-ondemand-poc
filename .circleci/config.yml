@@ -39,7 +39,7 @@ jobs:
           command: echo $BUCKET_URI | base64
       - run:
           name: Show Bucket URI
-          command: echo <<parameters.bucket_uri>>
+          command: echo parameters.bucket_uri
 
 
 

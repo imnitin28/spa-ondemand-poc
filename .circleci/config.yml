@@ -26,16 +26,13 @@ jobs:
   deploy-main:
     <<: *defaults
     environment:
-      BUCKET_URI: << pipeline.parameters.bucket_uri >>
+      BUCKET_URI: pipeline.parameters.bucket_uri
     steps:
       - attach_workspace:
           at: .
       - run:
           name: bucket selection S3
           command: echo $BUCKET_URI
-      - run:
-          name: bucket from parameters
-          command: echo << pipeline.parameters.bucket_uri >>
 
 workflows:
   version: 2

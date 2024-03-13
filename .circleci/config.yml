@@ -33,6 +33,9 @@ jobs:
       - run:
           name: bucket selection S3
           command: echo $BUCKET_URI | base64
+      - run:
+          name: Show Bucket URI
+          command: echo " BUCKET_URI -> << parameters.bucket_uri >>"
 
 
 

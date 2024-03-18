@@ -12,6 +12,9 @@ parameters:
   bucket_uri:
     type: string
     default: $BUCKET_URI
+  trigger-job:
+    type: boolean
+    default: false
 
 jobs:
   checkout_code:
@@ -38,6 +41,10 @@ jobs:
           name: bucket selection S3
           command: echo $BUCKET_URI | base64
       - run:
+          name: bucket selection S3
+          command: |
+            if [ "$"]
+      - run:
           name: Show Bucket URI
           command: echo "<< parameters.bucket_uri >>"
 
@@ -46,6 +53,9 @@ jobs:
 workflows:
   version: 2
   build_and_test:
+    when:
+      and: 
+        - equal: [true, << pipeline.parameters.trigger-job >>]
     jobs:
       - checkout_code
       - deploy-main:

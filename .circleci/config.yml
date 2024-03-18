@@ -53,12 +53,12 @@ jobs:
 workflows:
   version: 2
   build_and_test:
-    when:
-      and: 
-        - equal: [true, << pipeline.parameters.trigger-job >>]
     jobs:
       - checkout_code
       - deploy-main:
+          when:
+          and: 
+          - equal: [true, << pipeline.parameters.trigger-job >>]
           filters:
             branches:
               only: main

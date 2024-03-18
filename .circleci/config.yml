@@ -32,23 +32,15 @@ jobs:
       bucket_uri:
         type: string
         default: $BUCKET_URI
-    # environment:
-    #   BUCKET_URI: "${bucket_uri}"
     steps:
       - attach_workspace:
           at: .
       - run:
-          name: bucket selection S3
-          command: echo $BUCKET_URI | base64
-      - run:
-          name: bucket selection S3
-          command: |
-            if [ "$"]
+          name: Base64 Encode Bucket URI
+          command: echo "$BUCKET_URI" | base64
       - run:
           name: Show Bucket URI
-          command: echo "<< parameters.bucket_uri >>"
-
-
+          command: echo "${BUCKET_URI}"
 
 workflows:
   version: 2

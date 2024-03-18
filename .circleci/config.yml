@@ -58,7 +58,7 @@ workflows:
       - deploy-main:
           when:
             and:
-            - equal: [true, << pipeline.parameters.trigger-job >>]
+              - equal: [true, << pipeline.parameters.trigger-job >>]
           filters:
             branches:
               only: main

@@ -68,7 +68,7 @@ parameters:
     default: false
   trigger-job:
     type: boolean
-    default: false
+    default: true
     
 jobs:
   checkout_code:

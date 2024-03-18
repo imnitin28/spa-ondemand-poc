@@ -80,14 +80,23 @@ jobs:
           paths:
             - .
 
-  deploy-main:
+  deploy-dev-main:
     <<: *defaults
     steps:
       - attach_workspace:
           at: .
       - run:
-          name: bucket selection S3
+          name: bucket selection S3 - main dev bucket
           command: echo pwd
+    
+  deploy-prod-main:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: bucket selection S3 - main prod bucket
+          command: echo date
 
 workflows:
   build_and_test:
@@ -96,7 +105,12 @@ workflows:
         - equal: [true, << pipeline.parameters.trigger-job >>]
     jobs:
       - checkout_code
-      - deploy-main:
+      - deploy-dev-main:
+          filters:
+            branches:
+              only: main
+
+      - deploy-prod-main:
           filters:
             branches:
               only: main

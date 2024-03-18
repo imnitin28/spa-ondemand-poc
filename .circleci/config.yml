@@ -57,8 +57,8 @@ workflows:
       - checkout_code
       - deploy-main:
           when:
-          and: 
-          - equal: [true, << pipeline.parameters.trigger-job >>]
+            and:
+            - equal: [true, << pipeline.parameters.trigger-job >>]
           filters:
             branches:
               only: main

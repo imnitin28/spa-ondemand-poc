@@ -1,3 +1,53 @@
+# defaults: &defaults
+#   docker:
+#     - image: circleci/node:16-browsers
+#       environment:
+#         TZ: "Europe/Paris"
+#         JOBS: 1
+#   working_directory: ~/spa-ondemand-poc
+
+# version: 2.1 # Use version 2.1 to enable Orb usage.
+
+# parameters:
+#   deploy_to_prod:
+#     type: boolean
+#     default: false # do not update this value from here. Instead tweak from parameters using UI.
+    
+# jobs:
+#   checkout_code:
+#     <<: *defaults
+#     steps:
+#       - checkout
+#       - persist_to_workspace:
+#           root: .
+#           paths:
+#             - .
+
+#   deploy:
+#     <<: *defaults
+#     steps:
+#       - attach_workspace:
+#           at: .
+#       - when:
+#           condition: << pipeline.parameters.deploy_to_prod >>
+#           steps:
+#             - run: echo "deploy to prod s3 bucket"  # when deploy_to_prod is set to false - it won't pick this - this is default behaviour.
+#       - unless:
+#           condition: << pipeline.parameters.deploy_to_prod >>
+#           steps:
+#             - run: echo "deploy to dev s3 bucket" # runs when deploy_to_prod is set to true - this is custom behaviour - fron circleci UI.
+
+# workflows:
+#   build_and_test_dev:
+#     jobs:
+#       - checkout_code
+#       - deploy:
+#           filters:
+#             branches:
+#               only: main
+
+
+
 defaults: &defaults
   docker:
     - image: circleci/node:16-browsers
@@ -23,25 +73,43 @@ jobs:
           paths:
             - .
 
-  deploy:
+  deploy-dev-main:
     <<: *defaults
     steps:
       - attach_workspace:
           at: .
-      - when:
-          condition: << pipeline.parameters.deploy_to_prod >>
-          steps:
-            - run: echo "deploy to prod s3 bucket"  # when deploy_to_prod is set to false - it won't pick this - this is default behaviour.
-      - unless:
-          condition: << pipeline.parameters.deploy_to_prod >>
-          steps:
-            - run: echo "deploy to dev s3 bucket" # runs when deploy_to_prod is set to true - this is custom behaviour - fron circleci UI.
+      - run:
+          name: bucket selection S3 - main dev bucket
+          command: echo pwd
+    
+  deploy-prod-main:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: bucket selection S3 - main prod bucket
+          command: echo date
 
 workflows:
+  build_and_test_prod:
+    when:
+      and:
+        - equal: [true, << pipeline.parameters.deploy_to_prod >>] # true, false -  should not execute
+    jobs:
+      - deploy-prod-main:
+          filters:
+            branches:
+              only: main
+      
+
   build_and_test_dev:
+    when:
+      and:
+        - equal: [false, << pipeline.parameters.deploy_to_prod >>] # false, false - should execute 
     jobs:
       - checkout_code
-      - deploy:
+      - deploy-dev-main:
           filters:
             branches:
               only: main

@@ -50,7 +50,7 @@ jobs:
   #         command: echo date
 
 workflows:
-  build_and_test_prod:
+  # build_and_test_prod:
     # when:
     #   and:
     #     - equal: [true, << pipeline.parameters.deploy_to_prod >>] # true, false -  should not execute

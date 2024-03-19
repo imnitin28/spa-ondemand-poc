@@ -31,11 +31,11 @@ jobs:
       - when:
           condition: << pipeline.parameters.deploy_to_prod >>
           steps:
-            - run: echo "deploy to dev s3 bucket"
+            - run: echo "deploy to prod s3 bucket"
       - unless:
           condition: << pipeline.parameters.deploy_to_prod >>
           steps:
-            - run: echo "deploy to prod s3 bucket"
+            - run: echo "deploy to dev s3 bucket"
       # - run:
       #     name: bucket selection S3 - main dev bucket
       #     command: echo pwd

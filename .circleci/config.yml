@@ -9,12 +9,9 @@ defaults: &defaults
 version: 2.1 # Use version 2.1 to enable Orb usage.
 
 parameters:
-  bucket_uri:
-    type: boolean
-    default: false
   deploy_to_prod:
     type: boolean
-    default: false
+    default: false # do not update this value from here. Instead tweak from parameters using UI.
     
 jobs:
   checkout_code:
@@ -46,22 +43,39 @@ jobs:
 
 workflows:
   build_and_test_prod:
-    when:
-      and:
-        - equal: [true, << pipeline.parameters.deploy_to_prod >>] # true, false -  should not execute
-    jobs:
-      - deploy-prod-main:
-          filters:
-            branches:
-              only: main
+    # when:
+    #   and:
+    #     - equal: [true, << pipeline.parameters.deploy_to_prod >>] # true, false -  should not execute
+    # jobs:
+    #   - deploy-prod-main:
+    #       filters:
+    #         branches:
+    #           only: main
 
-  build_and_test_dev:
-    when:
-      and:
-        - equal: [false, << pipeline.parameters.deploy_to_prod >>] # false, false - should execute 
     jobs:
-      - checkout_code
-      - deploy-dev-main:
-          filters:
-            branches:
-              only: main
+      - deploy:
+          steps:
+            - when:
+                condition: << pipeline.parameters.deploy_to_prod >>
+                steps:
+                - run:
+                    name: bucket selection S3 - main prod bucket
+                    command: echo date
+            - unless:
+                condition: << pipeline.parameters.deploy_to_prod >>
+                steps:
+                - run:
+                    name: bucket selection S3 - main dev bucket
+                    command: echo pwd
+      
+
+  # build_and_test_dev:
+  #   when:
+  #     and:
+  #       - equal: [false, << pipeline.parameters.deploy_to_prod >>] # false, false - should execute 
+  #   jobs:
+  #     - checkout_code
+  #     - deploy-dev-main:
+  #         filters:
+  #           branches:
+  #             only: main

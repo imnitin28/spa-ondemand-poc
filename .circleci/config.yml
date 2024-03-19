@@ -23,7 +23,7 @@ jobs:
           paths:
             - .
 
-  deploy-dev-main:
+  deploy:
     <<: *defaults
     steps:
       - attach_workspace:

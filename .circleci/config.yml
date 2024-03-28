@@ -46,3 +46,5 @@ workflows:
             tags:
               only: 
                 - /^v.*/
+            branches:
+              only: main

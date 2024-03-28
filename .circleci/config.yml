@@ -12,6 +12,12 @@ parameters:
   deploy_to_prod:
     type: boolean
     default: false # do not update this value from here. Instead tweak from parameters using UI.
+  deploy_tag_version:
+    type: string
+    default: /^v.*/
+  deploy_branch:
+    type: string
+    default: main
     
 jobs:
   checkout_code:
@@ -45,6 +51,7 @@ workflows:
           filters: 
             tags:
               only: 
-                - /^v.*/
+                # - /^v.*/
+                - << pipeline.parameters.deploy_tag_version >>
             branches:
-              only: main
+              only: << pipeline.parameters.deploy_branch >>

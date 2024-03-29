@@ -4,7 +4,9 @@ metadata:
   name: spa-ondemand-poc
   annotations:
     github.com/project-slug: imnitin28/spa-ondemand-poc
+  tags:
+    - node
 spec:
   type: other
-  lifecycle: unknown
+  lifecycle: development
   owner: guests

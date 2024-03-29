@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: spa-ondemand-poc
+  annotations:
+    github.com/project-slug: imnitin28/spa-ondemand-poc
+spec:
+  type: other
+  lifecycle: unknown
+  owner: guests

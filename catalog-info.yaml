@@ -4,6 +4,7 @@ metadata:
   name: spa-ondemand-poc
   annotations:
     github.com/project-slug: imnitin28/spa-ondemand-poc
+    backstage.io/techdocs-ref: spa-on-demand
   tags:
     - node
 spec:

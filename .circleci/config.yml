@@ -15,9 +15,6 @@ parameters:
   deploy_tag_version:
     type: string
     default: /^v.*/
-  deploy_branch:
-    type: string
-    default: main
     
 jobs:
   checkout_code:
@@ -54,4 +51,4 @@ workflows:
                 # - /^v.*/
                 - << pipeline.parameters.deploy_tag_version >>
             branches:
-              only: << pipeline.parameters.deploy_branch >>
+              ignore: /.*/

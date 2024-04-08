@@ -54,7 +54,6 @@ jobs:
 
 workflows:
   build_and_test_dev:
-    when: << pipeline.parameters.deploy_tag_version != null >>
     jobs:
       - checkout_code
       - deploy:

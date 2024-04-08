@@ -14,7 +14,7 @@ parameters:
     default: false # do not update this value from here. Instead tweak from parameters using UI.
   deploy_tag_version:
     type: string
-    default: null # Specify the tag version for deployment
+    default: vlatestnew # Specify the tag version for deployment
 
 jobs:
   checkout_code:

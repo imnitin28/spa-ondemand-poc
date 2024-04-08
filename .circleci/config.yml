@@ -31,18 +31,18 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run:
-          name: Validate Tag
-          command: |
-            if git tag --list | grep -q "$DEPLOY_TAG"; then
-              echo "Tag $DEPLOY_TAG found, deploying..."
-              # Proceed with deployment steps here
-            else
-              echo "Tag $DEPLOY_TAG not found, skipping deployment."
-              # Add any other actions you want to perform if the tag is not found
-            fi
-        environment:
-          DEPLOY_TAG: << pipeline.parameters.deploy_tag_version >>
+      # - run:
+      #     name: Validate Tag
+      #     command: |
+      #       if git tag --list | grep -q "$DEPLOY_TAG"; then
+      #         echo "Tag $DEPLOY_TAG found, deploying..."
+      #         # Proceed with deployment steps here
+      #       else
+      #         echo "Tag $DEPLOY_TAG not found, skipping deployment."
+      #         # Add any other actions you want to perform if the tag is not found
+      #       fi
+      #   environment:
+      #     DEPLOY_TAG: << pipeline.parameters.deploy_tag_version >>
       - when:
           condition: << pipeline.parameters.deploy_to_prod >>
           steps:

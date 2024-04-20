@@ -1,0 +1,50 @@
+# defaults: &defaults
+#   docker:
+#     - image: circleci/node:16-browsers
+#       environment:
+#         TZ: "Europe/Paris"
+#         JOBS: 1
+#   working_directory: ~/spa-ondemand-poc
+
+# version: 2.1 # Use version 2.1 to enable Orb usage.
+
+# parameters:
+#   deploy_to_prod:
+#     type: boolean
+#     default: false # do not update this value from here. Instead tweak from parameters using UI.
+#   deploy_tag_version:
+#     type: string
+#     default: vlatestnew # Specify the tag version for deployment
+
+# jobs:
+#   checkout_code:
+#     <<: *defaults
+#     steps:
+#       - checkout
+#       - persist_to_workspace:
+#           root: .
+#           paths:
+#             - .
+
+#   deploy:
+#     <<: *defaults
+#     steps:
+#       - attach_workspace:
+#           at: .
+#       - when:
+#           condition: << pipeline.parameters.deploy_to_prod >>
+#           steps:
+#             - run: echo "deploy to PROD - v6 - latest"  # when deploy_to_prod is set to false - it won't pick this - this is default behaviour.
+#       - unless:
+#           condition: << pipeline.parameters.deploy_to_prod >>
+#           steps:
+#             - run: echo "deploy to DEV and QA - tag version v0.0.6" # runs when deploy_to_prod is set to true - this is custom behaviour - fron circleci UI.
+
+# workflows:
+#   build_and_test_dev:
+#     jobs:
+#       - checkout_code
+#       - deploy:
+#           filters:
+#             tags:
+#               only: << pipeline.parameters.deploy_tag_version >>

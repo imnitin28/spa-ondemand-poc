@@ -32,14 +32,14 @@ jobs:
           condition: << pipeline.parameters.deploy_to_prod >>
           steps:
             - run: # when deploy_to_prod is set to false - it won't pick this - this is default behaviour.
-                name: non-prod deployments
-                command: echo "logic to deploy to development"
+                name: prod deployments
+                command: echo "logic to deploy to production"
       - unless:
           condition: << pipeline.parameters.deploy_to_prod >>
           steps:
             - run: # runs when deploy_to_prod is set to true - this is custom behaviour - fron circleci UI.
-                name: prod deployments
-                command: echo "logic to deploy to production"
+                name: non-prod deployments
+                command: echo "logic to deploy to development"
 
 
 workflows:
